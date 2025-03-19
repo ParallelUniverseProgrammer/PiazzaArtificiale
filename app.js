@@ -1,6 +1,7 @@
 // Global state
 let conversationState = {
     isActive: false,
+    isPaused: false,
     history: [],
     currentSpeaker: null,
     activeRetry: null,
@@ -16,13 +17,27 @@ let conversationState = {
 
 // Get DOM elements
 const startBtn = document.getElementById('start-btn');
+const pauseBtn = document.getElementById('pause-btn');
 const resetBtn = document.getElementById('reset-btn');
 const conversationDiv = document.getElementById('conversation');
+const sidebarToggle = document.getElementById('sidebar-toggle');
+const resizeHandle = document.getElementById('resize-handle');
 
 // Initialize event listeners
 document.addEventListener('DOMContentLoaded', () => {
     startBtn.addEventListener('click', startConversation);
+    pauseBtn.addEventListener('click', togglePause);
     resetBtn.addEventListener('click', resetConversation);
+    sidebarToggle.addEventListener('click', toggleSidebar);
+    
+    // Initialize sidebar resize functionality
+    initSidebarResize();
+    
+    // Check if we have a saved sidebar state
+    const sidebarState = localStorage.getItem('sidebarState');
+    if (sidebarState === 'collapsed') {
+        document.querySelector('.app-container').classList.add('sidebar-collapsed');
+    }
     
     // Initialize theme toggle
     const themeToggle = document.getElementById('theme-toggle');
@@ -96,11 +111,13 @@ async function startConversation() {
     
     // Update UI
     startBtn.disabled = true;
+    pauseBtn.disabled = false;
     resetBtn.disabled = false;
     conversationDiv.innerHTML = '';
     
     // Initialize conversation state
     conversationState.isActive = true;
+    conversationState.isPaused = false;
     conversationState.history = [];
     conversationState.currentSpeaker = 1; // Start with model1
     
@@ -132,6 +149,7 @@ function resetConversation() {
         
         // Reset state
         conversationState.isActive = false;
+        conversationState.isPaused = false;
         conversationState.currentSpeaker = null;
         conversationState.history = [];
         conversationState.processingResponse = false;
@@ -147,8 +165,83 @@ function resetConversation() {
         // Update UI
         conversationDiv.innerHTML = '';
         startBtn.disabled = false;
+        pauseBtn.disabled = true;
+        pauseBtn.textContent = 'Pause';
+        pauseBtn.classList.remove('resume');
         resetBtn.disabled = true;
     }
+}
+
+// Toggle conversation pause/resume
+function togglePause() {
+    if (!conversationState.isActive) return;
+    
+    conversationState.isPaused = !conversationState.isPaused;
+    
+    if (conversationState.isPaused) {
+        pauseBtn.textContent = 'Resume';
+        pauseBtn.classList.add('resume');
+    } else {
+        pauseBtn.textContent = 'Pause';
+        pauseBtn.classList.remove('resume');
+        
+        // If we're resuming and not currently processing, trigger next turn
+        if (!conversationState.processingResponse) {
+            setTimeout(takeTurn, parseInt(document.getElementById('pause-duration').value, 10));
+        }
+    }
+}
+
+// Toggle sidebar collapse
+function toggleSidebar() {
+    const appContainer = document.querySelector('.app-container');
+    appContainer.classList.toggle('sidebar-collapsed');
+    
+    // Save state in localStorage
+    if (appContainer.classList.contains('sidebar-collapsed')) {
+        localStorage.setItem('sidebarState', 'collapsed');
+    } else {
+        localStorage.setItem('sidebarState', 'expanded');
+    }
+}
+
+// Initialize sidebar resizing
+function initSidebarResize() {
+    const appContainer = document.querySelector('.app-container');
+    const sidebar = document.querySelector('.sidebar');
+    let isResizing = false;
+    let lastX;
+
+    resizeHandle.addEventListener('mousedown', (e) => {
+        isResizing = true;
+        lastX = e.clientX;
+        resizeHandle.classList.add('active');
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isResizing) return;
+        
+        // Don't allow resizing if sidebar is collapsed
+        if (appContainer.classList.contains('sidebar-collapsed')) return;
+        
+        const delta = e.clientX - lastX;
+        lastX = e.clientX;
+        
+        // Update the grid template columns
+        const currentWidth = parseInt(getComputedStyle(sidebar).width);
+        const newWidth = currentWidth + delta;
+        
+        // Set min and max limits
+        if (newWidth >= 200 && newWidth <= 500) {
+            appContainer.style.gridTemplateColumns = `${newWidth}px 1fr`;
+            resizeHandle.style.left = `${newWidth}px`;
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        isResizing = false;
+        resizeHandle.classList.remove('active');
+    });
 }
 
 // Update stats display
@@ -188,8 +281,8 @@ function updateStats() {
 
 // Handle one turn in the conversation
 async function takeTurn() {
-    // Don't proceed if conversation is inactive
-    if (!conversationState.isActive) return;
+    // Don't proceed if conversation is inactive or paused
+    if (!conversationState.isActive || conversationState.isPaused) return;
     
     // If we're already processing a response, don't start another
     if (conversationState.processingResponse) {

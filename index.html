@@ -8,9 +8,15 @@
 </head>
 <body>
     <div class="app-container">
+        <div class="resize-handle" id="resize-handle"></div>
         <aside class="sidebar">
-            <div class="logo">
-                <h1>Piazza Artificiale</h1>
+            <div class="sidebar-header">
+                <div class="logo">
+                    <h1>Piazza Artificiale</h1>
+                </div>
+                <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle sidebar">
+                    <span class="toggle-icon">◀</span>
+                </button>
             </div>
             
             <div class="control-panel">
@@ -42,6 +48,7 @@
                 
                 <div class="buttons">
                     <button id="start-btn">Start Conversation</button>
+                    <button id="pause-btn" disabled>Pause</button>
                     <button id="reset-btn" disabled>Reset</button>
                 </div>
                 
