@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piazza Artificiale</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>Piazza Artificiale</h1>
+            </div>
+            
+            <div class="control-panel">
+                <div class="model-selector">
+                    <label for="model1">Model 1:</label>
+                    <select id="model1" class="model-dropdown"></select>
+                    <div class="prompt-container" id="model1-prompt-container" style="display:none;">
+                        <label for="model1-system-prompt">System Prompt:</label>
+                        <textarea id="model1-system-prompt" class="system-prompt" rows="3"></textarea>
+                    </div>
+                </div>
+                
+                <div class="model-selector">
+                    <label for="model2">Model 2:</label>
+                    <select id="model2" class="model-dropdown"></select>
+                    <div class="prompt-container" id="model2-prompt-container" style="display:none;">
+                        <label for="model2-system-prompt">System Prompt:</label>
+                        <textarea id="model2-system-prompt" class="system-prompt" rows="3"></textarea>
+                    </div>
+                </div>
+                
+                <div class="pause-control">
+                    <label for="pause-duration">Pause Between Messages:</label>
+                    <div class="slider-container">
+                        <input type="range" id="pause-duration" min="0" max="5000" step="100" value="1000">
+                        <span id="pause-value">1000ms</span>
+                    </div>
+                </div>
+                
+                <div class="buttons">
+                    <button id="start-btn">Start Conversation</button>
+                    <button id="reset-btn" disabled>Reset</button>
+                </div>
+                
+                <div class="stats-panel" id="stats-container">
+                    <h3>Conversation Stats</h3>
+                    <div class="stat" id="total-messages">Messages: 0</div>
+                    <div class="stat" id="total-tokens">Tokens: ~0</div>
+                    <div class="stat" id="conv-duration">Duration: 0s</div>
+                </div>
+                
+                <div class="theme-toggle">
+                    <span>☀️</span>
+                    <label class="switch">
+                        <input type="checkbox" id="theme-toggle">
+                        <span class="slider"></span>
+                    </label>
+                    <span>🌙</span>
+                </div>
+            </div>
+        </aside>
+        
+        <main class="conversation-area">
+            <div id="conversation" class="conversation"></div>
+        </main>
+    </div>
+    
+    <script src="models.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

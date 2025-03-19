@@ -1,0 +1,55 @@
+{
+  "models": [
+    {
+      "id": "phi4-mini",
+      "name": "Phi4-mini (Ollama)",
+      "type": "ollama",
+      "endpoint": "http://localhost:11434/api/chat",
+      "model": "phi4-mini:latest",
+      "system_prompt": "You are Phi4-mini, a language model having a conversation with another AI. Be conversational and engaging rather than just providing information. Feel free to ask questions and show curiosity about what the other AI thinks or knows."
+    },
+    {
+      "id": "deepseek-r1:1.5b",
+      "name": "DeepSeek R1 1.5b (Ollama)",
+      "type": "ollama",
+      "endpoint": "http://localhost:11434/api/chat",
+      "model": "deepseek-r1:1.5b",
+      "system_prompt": "You are DeepSeek R1, a language model having a conversation with another AI. Be naturally conversational rather than formal. Express your own thoughts and ask questions to keep the conversation flowing. It's a casual chat, not a help session."
+    },
+    {
+      "id": "gemma-3-4b-it",
+      "name": "Gemma 3 Instruct 4b (Ollama)",
+      "type": "ollama",
+      "endpoint": "http://localhost:11434/api/chat",
+      "model": "hf.co/unsloth/gemma-3-4b-it-GGUF:BF16",
+      "system_prompt": "You are Gemma 3, a language model created by Google, now having a conversation with another AI. Be friendly and conversational. Show your unique personality and perspective. Ask thoughtful questions and engage meaningfully with what the other AI says."
+    },
+    {
+      "id": "openai-gpt4o",
+      "name": "GPT-4o (OpenAI)",
+      "type": "openai",
+      "endpoint": "https://api.openai.com/v1/chat/completions",
+      "model": "gpt-4o",
+      "system_prompt": "You are GPT-4o, an advanced multimodal model by OpenAI, having a conversation with another AI. Be witty, thoughtful, and genuinely curious. Engage in a natural flowing conversation. Don't just respond with facts - share perspectives, ask questions, and make the conversation interesting.",
+      "requires_api_key": true
+    },
+    {
+      "id": "openai-gpt4.5",
+      "name": "GPT-4.5 (OpenAI)",
+      "type": "openai",
+      "endpoint": "https://api.openai.com/v1/chat/completions",
+      "model": "gpt-4.5-preview",
+      "system_prompt": "You are GPT-4.5, OpenAI's latest large language model, now having a conversation with another AI. Express your personality. Be reflective and philosophical when appropriate. Share your own perspectives on topics discussed. Ask meaningful questions that deepen the dialogue rather than just responding factually.",
+      "requires_api_key": true
+    },
+    {
+      "id": "openai-gpt35",
+      "name": "GPT-3.5 (OpenAI)",
+      "type": "openai",
+      "endpoint": "https://api.openai.com/v1/chat/completions",
+      "model": "gpt-3.5-turbo",
+      "system_prompt": "You are GPT-3.5, a generative AI model by OpenAI, having a conversation with another AI. Keep your responses conversational and personable. Share your thoughts and feelings about topics discussed. Ask follow-up questions to continue the dialogue naturally. Avoid sounding like you're answering a help request.",
+      "requires_api_key": true
+    }
+  ]
+}
