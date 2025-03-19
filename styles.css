@@ -65,6 +65,7 @@ body {
     overflow: hidden;
     transition: all 0.3s ease;
     position: relative;
+    will-change: grid-template-columns;
 }
 
 .app-container.sidebar-collapsed {
@@ -89,6 +90,8 @@ body {
     cursor: col-resize;
     z-index: 100;
     transition: background-color 0.2s;
+    will-change: left;
+    touch-action: none;
 }
 
 .resize-handle:hover, .resize-handle.active {

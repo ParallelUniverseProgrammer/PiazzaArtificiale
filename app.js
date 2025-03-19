@@ -260,27 +260,35 @@ function initSidebarResize() {
         // Don't allow resizing if sidebar is collapsed
         if (appContainer.classList.contains('sidebar-collapsed')) return;
         
-        const delta = e.clientX - lastX;
-        lastX = e.clientX;
+        // Use direct mouse position instead of delta calculations
+        // This makes the resize more immediate and tied to actual mouse position
+        const mouseX = e.clientX;
+        const newWidth = Math.max(200, Math.min(500, mouseX));
         
-        // Update the grid template columns
-        const currentWidth = parseInt(getComputedStyle(sidebar).width);
-        const newWidth = currentWidth + delta;
+        // Apply the resize directly without animation
+        appContainer.style.transition = 'none';
+        resizeHandle.style.transition = 'none';
         
-        // Set min and max limits
-        if (newWidth >= 200 && newWidth <= 500) {
-            appContainer.style.gridTemplateColumns = `${newWidth}px 1fr`;
-            resizeHandle.style.left = `${newWidth}px`;
-            
-            // Store the sidebar width in localStorage
-            localStorage.setItem('sidebarWidth', newWidth);
-        }
+        // Update layout
+        appContainer.style.gridTemplateColumns = `${newWidth}px 1fr`;
+        resizeHandle.style.left = `${newWidth}px`;
+        
+        // Store the sidebar width in localStorage
+        localStorage.setItem('sidebarWidth', newWidth);
     });
 
     document.addEventListener('mouseup', () => {
-        isResizing = false;
-        resizeHandle.classList.remove('active');
-        appContainer.classList.remove('resizing'); // Remove class after resize
+        if (isResizing) {
+            // Restore transitions after resize is complete
+            setTimeout(() => {
+                appContainer.style.transition = '';
+                resizeHandle.style.transition = '';
+            }, 0);
+            
+            isResizing = false;
+            resizeHandle.classList.remove('active');
+            appContainer.classList.remove('resizing'); // Remove class after resize
+        }
     });
     
     // Restore saved sidebar width if exists
