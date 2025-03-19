@@ -35,8 +35,22 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Check if we have a saved sidebar state
     const sidebarState = localStorage.getItem('sidebarState');
+    const appContainer = document.querySelector('.app-container');
+    
     if (sidebarState === 'collapsed') {
-        document.querySelector('.app-container').classList.add('sidebar-collapsed');
+        appContainer.classList.add('sidebar-collapsed');
+        appContainer.style.gridTemplateColumns = '40px 1fr';
+        resizeHandle.style.left = '40px';
+    } else {
+        // If expanded, restore any saved width
+        const savedWidth = localStorage.getItem('sidebarWidth');
+        if (savedWidth) {
+            const width = parseInt(savedWidth);
+            if (width >= 200 && width <= 500) {
+                appContainer.style.gridTemplateColumns = `${width}px 1fr`;
+                resizeHandle.style.left = `${width}px`;
+            }
+        }
     }
     
     // Initialize theme toggle
@@ -197,6 +211,26 @@ function toggleSidebar() {
     const appContainer = document.querySelector('.app-container');
     appContainer.classList.toggle('sidebar-collapsed');
     
+    // If expanding, update resize handle position
+    if (!appContainer.classList.contains('sidebar-collapsed')) {
+        const savedWidth = localStorage.getItem('sidebarWidth');
+        if (savedWidth) {
+            const width = parseInt(savedWidth);
+            if (width >= 200 && width <= 500) {
+                appContainer.style.gridTemplateColumns = `${width}px 1fr`;
+                resizeHandle.style.left = `${width}px`;
+            }
+        } else {
+            // Default to 300px if no saved width
+            appContainer.style.gridTemplateColumns = '300px 1fr';
+            resizeHandle.style.left = '300px';
+        }
+    } else {
+        // Make sure grid columns are set correctly when collapsed
+        appContainer.style.gridTemplateColumns = '40px 1fr';
+        resizeHandle.style.left = '40px';
+    }
+    
     // Save state in localStorage
     if (appContainer.classList.contains('sidebar-collapsed')) {
         localStorage.setItem('sidebarState', 'collapsed');
@@ -216,6 +250,8 @@ function initSidebarResize() {
         isResizing = true;
         lastX = e.clientX;
         resizeHandle.classList.add('active');
+        appContainer.classList.add('resizing'); // Add class to prevent text selection
+        e.preventDefault(); // Prevent default selection behavior
     });
 
     document.addEventListener('mousemove', (e) => {
@@ -235,13 +271,27 @@ function initSidebarResize() {
         if (newWidth >= 200 && newWidth <= 500) {
             appContainer.style.gridTemplateColumns = `${newWidth}px 1fr`;
             resizeHandle.style.left = `${newWidth}px`;
+            
+            // Store the sidebar width in localStorage
+            localStorage.setItem('sidebarWidth', newWidth);
         }
     });
 
     document.addEventListener('mouseup', () => {
         isResizing = false;
         resizeHandle.classList.remove('active');
+        appContainer.classList.remove('resizing'); // Remove class after resize
     });
+    
+    // Restore saved sidebar width if exists
+    const savedWidth = localStorage.getItem('sidebarWidth');
+    if (savedWidth && !appContainer.classList.contains('sidebar-collapsed')) {
+        const width = parseInt(savedWidth);
+        if (width >= 200 && width <= 500) {
+            appContainer.style.gridTemplateColumns = `${width}px 1fr`;
+            resizeHandle.style.left = `${width}px`;
+        }
+    }
 }
 
 // Update stats display

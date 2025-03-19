@@ -71,15 +71,23 @@ body {
     grid-template-columns: 40px 1fr;
 }
 
+/* Disable text selection during resize */
+.app-container.resizing {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
 /* Resize Handle */
 .resize-handle {
     position: absolute;
     left: 300px;
-    width: 6px;
+    width: 10px;
     height: 100%;
     background-color: transparent;
     cursor: col-resize;
-    z-index: 10;
+    z-index: 100;
     transition: background-color 0.2s;
 }
 
@@ -108,6 +116,7 @@ body {
 .app-container.sidebar-collapsed .sidebar {
     padding: 10px 0;
     overflow: hidden;
+    width: 40px;
 }
 
 .sidebar-header {
@@ -115,6 +124,7 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
+    width: 100%;
 }
 
 .logo h1 {
@@ -153,12 +163,25 @@ body {
 
 .app-container.sidebar-collapsed .toggle-icon {
     transform: rotate(180deg);
+    display: inline-block;
 }
 
-.app-container.sidebar-collapsed .control-panel > *:not(.sidebar-toggle) {
-    opacity: 0;
-    transform: translateX(-20px);
-    position: absolute;
+.app-container.sidebar-collapsed .control-panel {
+    display: none;
+}
+
+.app-container.sidebar-collapsed .sidebar-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    height: 40px;
+}
+
+.app-container.sidebar-collapsed .sidebar-toggle {
+    position: static;
+    margin: 0;
 }
 
 .control-panel {
@@ -513,18 +536,47 @@ input:checked + .slider:before {
 /* Responsive Design */
 @media (max-width: 768px) {
     .app-container {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr !important; /* Override inline styles */
         grid-template-rows: auto 1fr;
         height: 100vh;
+    }
+    
+    .app-container.sidebar-collapsed {
+        grid-template-columns: 1fr !important;
+    }
+
+    .resize-handle {
+        display: none !important; /* Hide resize handle on mobile */
     }
 
     .sidebar {
         height: auto;
         max-height: 50vh;
+        width: 100% !important; /* Override inline styles */
         overflow-y: auto;
         border-right: none;
         border-bottom: 1px solid var(--border-color);
         padding: 10px;
+    }
+    
+    .app-container.sidebar-collapsed .sidebar {
+        width: 100% !important;
+        padding: 10px;
+    }
+    
+    .app-container.sidebar-collapsed .sidebar-header {
+        height: auto;
+        margin-bottom: 10px;
+    }
+    
+    .app-container.sidebar-collapsed .logo h1 {
+        position: static;
+        opacity: 1;
+        transform: none;
+    }
+    
+    .app-container.sidebar-collapsed .control-panel {
+        display: flex;
     }
 
     .logo h1 {
@@ -560,6 +612,10 @@ input:checked + .slider:before {
     
     .stats-panel {
         padding: 10px;
+    }
+    
+    .sidebar-toggle {
+        display: none; /* Hide sidebar toggle on mobile */
     }
 }
 
