@@ -508,6 +508,8 @@ async function streamModelResponse(model, messages, thinkingDiv) {
         await streamOllamaResponse(model, messages, messageContent, processTextChunk);
     } else if (model.type === 'openai') {
         await streamOpenAIResponse(model, messages, messageContent, processTextChunk);
+    } else if (model.type === 'google') {
+        await streamGoogleResponse(model, messages, messageContent, processTextChunk);
     } else {
         throw new Error(`Unsupported model type: ${model.type}`);
     }
@@ -752,6 +754,116 @@ async function streamOpenAIResponse(model, messages, messageElement, onChunk) {
         console.error('Error streaming from OpenAI:', error);
         throw error;
     }
+}
+
+// Stream response from Google Gemini API
+async function streamGoogleResponse(model, messages, messageElement, onChunk) {
+    const apiKey = model.api_key;
+    const endpoint = model.endpoint;
+    
+    if (!apiKey) {
+        throw new Error('API key is required for Google Gemini models');
+    }
+    
+    try {
+        // Format Google Gemini request
+        const formattedMessages = formatGeminiMessages(messages);
+        
+        // Add API key to the endpoint
+        const endpointWithKey = `${endpoint}?key=${apiKey}`;
+        
+        // First try non-streaming approach
+        const response = await fetch(endpointWithKey, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                contents: [formattedMessages],
+                generationConfig: {
+                    temperature: 0.7,
+                    maxOutputTokens: 800
+                }
+            })
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Gemini API error: ${response.status} - ${JSON.stringify(errorData)}`);
+        }
+        
+        // Parse the response
+        const responseData = await response.json();
+        
+        // Check if we have a valid response
+        if (responseData.candidates && 
+            responseData.candidates[0] && 
+            responseData.candidates[0].content && 
+            responseData.candidates[0].content.parts && 
+            responseData.candidates[0].content.parts[0] && 
+            responseData.candidates[0].content.parts[0].text) {
+            
+            const text = responseData.candidates[0].content.parts[0].text;
+            
+            // Since we don't have streaming, simulate it with chunks to maintain UI consistency
+            // We'll split the text into small chunks to simulate streaming
+            const chunkSize = 10; // characters per chunk
+            for (let i = 0; i < text.length; i += chunkSize) {
+                const chunk = text.substring(i, Math.min(i + chunkSize, text.length));
+                onChunk(chunk);
+                // Add a small delay to simulate streaming
+                await new Promise(resolve => setTimeout(resolve, 10));
+            }
+        } else {
+            throw new Error('Unexpected response format from Gemini API');
+        }
+    } catch (error) {
+        console.error('Error from Google Gemini:', error);
+        throw error;
+    }
+}
+
+// Format messages for Gemini API
+function formatGeminiMessages(messages) {
+    // Extract system message
+    let systemMessage = '';
+    const conversationMessages = [];
+    
+    for (const message of messages) {
+        if (message.role === 'system') {
+            systemMessage = message.content;
+        } else {
+            conversationMessages.push(message);
+        }
+    }
+    
+    // Gemini doesn't have a dedicated system message, so we'll prepend it to the first user message
+    // or create a new one if there are no user messages
+    const parts = [];
+    
+    // Add system message as a preamble if it exists
+    if (systemMessage) {
+        parts.push({
+            text: `System: ${systemMessage}\n\n`
+        });
+    }
+    
+    // Add conversation history
+    for (const message of conversationMessages) {
+        parts.push({
+            text: `${message.role === 'user' ? 'User' : 'Assistant'}: ${message.content}\n\n`
+        });
+    }
+    
+    // Add final prompt for the assistant's turn
+    parts.push({
+        text: "Assistant: "
+    });
+    
+    return {
+        role: "user",
+        parts: parts
+    };
 }
 
 // Save conversation history to local JSON file

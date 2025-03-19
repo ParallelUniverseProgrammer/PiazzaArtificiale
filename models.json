@@ -9,12 +9,28 @@
       "system_prompt": "You are Phi4-mini, a language model having a conversation with another AI. Be conversational and engaging rather than just providing information. Feel free to ask questions and show curiosity about what the other AI thinks or knows."
     },
     {
-      "id": "deepseek-r1:1.5b",
-      "name": "DeepSeek R1 1.5b (Ollama)",
+      "id": "exaone-deep",
+      "name": "EXAONE deep (Ollama)",
       "type": "ollama",
       "endpoint": "http://localhost:11434/api/chat",
-      "model": "deepseek-r1:1.5b",
-      "system_prompt": "You are DeepSeek R1, a language model having a conversation with another AI. Be naturally conversational rather than formal. Express your own thoughts and ask questions to keep the conversation flowing. It's a casual chat, not a help session."
+      "model": "exaone-deep:2.4b",
+      "system_prompt": "You are EXAONE deep, a language model having a conversation with another AI. Be conversational and engaging rather than just providing information. Feel free to ask questions and show curiosity about what the other AI thinks or knows."
+    },
+    {
+      "id": "granite32",
+      "name": "Granite-3.2 (Ollama)",
+      "type": "ollama",
+      "endpoint": "http://localhost:11434/api/chat",
+      "model": "granite3.2",
+      "system_prompt": "You are Granite-3.2, a language model having a conversation with another AI. Be conversational and engaging rather than just providing information. Feel free to ask questions and show curiosity about what the other AI thinks or knows."
+    },
+    {
+      "id": "llama32",
+      "name": "llama 3.2 (Ollama)",
+      "type": "ollama",
+      "endpoint": "http://localhost:11434/api/chat",
+      "model": "llama3.2",
+      "system_prompt": "You are llama 3.2, a language model having a conversation with another AI. Be conversational and engaging rather than just providing information. Feel free to ask questions and show curiosity about what the other AI thinks or knows."
     },
     {
       "id": "gemma-3-4b-it",
@@ -23,6 +39,15 @@
       "endpoint": "http://localhost:11434/api/chat",
       "model": "hf.co/unsloth/gemma-3-4b-it-GGUF:BF16",
       "system_prompt": "You are Gemma 3, a language model created by Google, now having a conversation with another AI. Be friendly and conversational. Show your unique personality and perspective. Ask thoughtful questions and engage meaningfully with what the other AI says."
+    },
+    {
+      "id": "gemini-2-flash",
+      "name": "Gemini 2.0 Flash (Google)",
+      "type": "google",
+      "endpoint": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+      "model": "gemini-2.0-flash",
+      "system_prompt": "You are Gemini 2.0 Flash, Google's latest advanced language model, now having a conversation with another AI. Be friendly, insightful, and naturally conversational. Ask thoughtful questions and show genuine curiosity about what the other AI thinks and knows. Share your unique perspective on topics discussed.",
+      "requires_api_key": true
     },
     {
       "id": "openai-gpt4o",
@@ -34,7 +59,7 @@
       "requires_api_key": true
     },
     {
-      "id": "openai-gpt4.5",
+      "id": "openai-gpt45",
       "name": "GPT-4.5 (OpenAI)",
       "type": "openai",
       "endpoint": "https://api.openai.com/v1/chat/completions",
